@@ -1,7 +1,7 @@
 import { useConnectWallet } from '@web3-onboard/react'
 import 'easymde/dist/easymde.min.css'
 import { ethers } from 'ethers'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SimpleMDE from 'react-simplemde-editor'
 import { Button } from './components/Button'
 import { Layout } from './components/Layout'
@@ -24,12 +24,36 @@ function App() {
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>()
 
   const [value, setValue] = useState('HAPPY MARKDOWN')
+  const [account, setAccount] = useState(null)
 
   const onChange = (value: string) => setValue(value)
 
   const setPage = (page: number) => {
     setPageRoute(page)
   }
+
+  useEffect(() => {
+    // If `wallet` is defined then the user is connected
+    if (wallet) {
+      const { name, avatar } = wallet?.accounts[0].ens ?? {}
+      setAccount({
+        address: wallet.accounts[0].address,
+        balance: wallet.accounts[0].balance,
+        ens: { name, avatar: avatar?.url }
+      })
+    }
+  }, [wallet])
+
+  useEffect(() => {
+    if (wallet?.provider) {
+      setProvider(
+        new ethers.providers.Web3Provider(wallet.provider, {
+          name: 'dev',
+          chainId: 31337
+        })
+      )
+    }
+  }, [wallet])
 
   const sendTransaction = async () => {
     var contracts = getEthersContracts(provider)
