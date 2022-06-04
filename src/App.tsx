@@ -56,7 +56,7 @@ function App() {
           </div>
           <SimpleMDE value={value} onChange={onChange} />
           <Button large={true} onClick={sendTransaction}>
-            Send Post
+            Send Post from {wallet?.accounts[0].address}
           </Button>
         </>
       ) : (
