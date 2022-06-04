@@ -1,15 +1,12 @@
-import { useState, useEffect, useCallback } from 'react'
 import { useConnectWallet, useSetChain, useWallets } from '@web3-onboard/react'
-import { Contract, ethers } from 'ethers'
-import Publication from "./interfaces/Publication.json";
-import Web3 from "web3";
+import 'easymde/dist/easymde.min.css'
+import { ethers } from 'ethers'
+import React, { useEffect, useState } from 'react'
+import SimpleMDE from 'react-simplemde-editor'
+import { Layout } from './components/Layout'
+import { getEthersContracts } from './contractBooter'
 import { initWeb3Onboard } from './onboard'
-import { AccountDetails, Network } from './components'
 import type { Account } from './types'
-import React from "react";
-import SimpleMDE from "react-simplemde-editor";
-import "easymde/dist/easymde.min.css";
-import { getEthersContracts, getWeb3Contracts } from './contractBooter'
 
 // Must be called outside of the App function
 initWeb3Onboard()
@@ -41,14 +38,13 @@ function App() {
 
   // The address to send to
   const [title, setTitle] = useState('')
-  const [page, setPageRoute] = useState(1);
+  const [page, setPageRoute] = useState(1)
 
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>()
 
-  const [value, setValue] = useState("HAPPY MARKDOWN");
+  const [value, setValue] = useState('HAPPY MARKDOWN')
 
-  const onChange = (value: string) => setValue(value) ;
-  
+  const onChange = (value: string) => setValue(value)
 
   useEffect(() => {
     // If `wallet` is defined then the user is connected
@@ -64,10 +60,12 @@ function App() {
 
   useEffect(() => {
     if (wallet?.provider) {
-      setProvider(new ethers.providers.Web3Provider(wallet.provider, {
-        name: "dev",
-        chainId: 31337
-    }))
+      setProvider(
+        new ethers.providers.Web3Provider(wallet.provider, {
+          name: 'dev',
+          chainId: 31337
+        })
+      )
     }
   }, [wallet])
 
@@ -76,7 +74,7 @@ function App() {
   }
 
   const setPage = (page: number) => {
-    setPageRoute(page);
+    setPageRoute(page)
   }
 
   const disconnectWallet = () => {
@@ -87,20 +85,19 @@ function App() {
   }
 
   const sendTransaction = async () => {
-
     var contracts = getEthersContracts(provider)
     var signer = provider?.getUncheckedSigner(wallet?.accounts[0].address)
-    if(wallet?.accounts[0].address && signer){
-      var contractWithSigner = contracts.publicationContract.connect(signer);
-      console.log(contractWithSigner);
-      await contractWithSigner.functions.post(value, title).catch((err: any) => console.log(err));;
+    if (wallet?.accounts[0].address && signer) {
+      var contractWithSigner = contracts.publicationContract.connect(signer)
+      console.log(contractWithSigner)
+      await contractWithSigner.functions.post(value, title).catch((err: any) => console.log(err))
     }
   }
- 
+
   return (
-    <div className="bg-grey-100 flex flex-col  items-center min-h-screen relative">
+    <Layout setPage={setPage} pageId={page}>
       <div className="fixed w-full top-0 right-0 p-3 flex justify-end items-center">
-        {wallet ? (
+        {/* {wallet ? (
           <Network
             chains={chains}
             connectedChain={connectedChain}
@@ -108,45 +105,34 @@ function App() {
           />
         ) : null}
         <div className="mx-1" />
-        <AccountDetails account={account} />
+        <AccountDetails account={account} /> */}
       </div>
-      <div className="my-32 text-3xl font-bold">hardhat-graph demo</div>  
-      <div className="my-32 text-3xl font-bold">  <button onClick={() => setPage(1)} className="btn btn-square">
-              Post
-            </button>  <button onClick={() => setPage(2)} className="btn btn-square">
-              Posts
-            </button></div> 
-      {page == 1?  <><div className="flex my-24">
-        <div className="form-control">
-          <div className="input-group">
-          <input
-              type="text"
-              className="input input-bordered outline-none"
-              value={title}
-              placeholder="Title of post"
-              onChange={(e) => setTitle(e.target.value)}
-            /> 
-          <SimpleMDE  value={value} onChange={onChange} />;
-            
-            <button onClick={sendTransaction} className="btn btn-square">
-              Send
-            </button>
+      <div className="my-32 text-3xl font-bold">hardhat-graph demo</div>
+      <div className="my-32 text-3xl font-bold"> </div>
+      {page == 1 ? (
+        <>
+          <div className="flex my-24">
+            <div className="form-control">
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="input input-bordered outline-none"
+                  value={title}
+                  placeholder="Title of post"
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+                <SimpleMDE value={value} onChange={onChange} />;
+                <button onClick={sendTransaction} className="btn btn-square">
+                  Send
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      {!wallet ?  
-      <div className="flex">
-        <button onClick={connectWallet} className="btn btn-primary mr-12">
-          Connect
-        </button>
-        <button onClick={disconnectWallet} className="btn btn-secondary">
-          Disconnect
-        </button>
-      </div> : <> </>
-        } </>:  <></>}
-     
-    </div>
-    
+        </>
+      ) : (
+        <></>
+      )}
+    </Layout>
   )
 }
 
