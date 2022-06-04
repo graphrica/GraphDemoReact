@@ -47,7 +47,7 @@ function App() {
         <>
           <div className="mt-4">
             <input
-              className="shadow-sm h-10 pl-2 mb-4 w-96 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              className="shadow-sm h-10 pl-2 mb-4 w-96 focus:ring-indigo-500 focus:border-indigo-500 block text-gray-900 sm:text-sm border-gray-300 rounded-md"
               type="text"
               value={title}
               placeholder="Title of post"
@@ -55,7 +55,9 @@ function App() {
             />
           </div>
           <SimpleMDE value={value} onChange={onChange} />
-          <Button onClick={sendTransaction}>Send Post</Button>
+          <Button large={true} onClick={sendTransaction}>
+            Send Post
+          </Button>
         </>
       ) : (
         <></>
