@@ -41,6 +41,7 @@ function App() {
     }
   }
 
+  console.log(wallet?.accounts, '~~~wallet')
   return (
     <Layout setPage={setPage} pageId={page}>
       {page == 1 ? (
